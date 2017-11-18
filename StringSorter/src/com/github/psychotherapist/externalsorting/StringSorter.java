@@ -5,10 +5,8 @@ import com.sun.istack.internal.Nullable;
 import java.io.*;
 
 public class StringSorter {
-    private static final int MEM_LIMIT_MB = 100;
-
     public static void main(String[] args) {
-        if (args.length < 1 || args.length > 2) {
+        if (args.length != 3) {
             echoHelp();
             return;
         }
@@ -19,20 +17,17 @@ public class StringSorter {
         inputFile = args[0];
 
         String outputFilePath = null;
-        if (args.length > 1) {
-           outputFilePath = args[1];
-        }
+        outputFilePath = args[1];
+        long memoryLimitBytes = Long.parseLong(args[2]);
 
-        sortStringsInFile(inputFile, outputFilePath, MEM_LIMIT_MB);
+        StringSorterInterface sorter = ArbitraryLengthStringSorter.getInstance(memoryLimitBytes);
+        sortStringsInFile(inputFile, outputFilePath, sorter);
     }
 
-    public static void sortStringsInFile(String inputFilePath, @Nullable String outFilePath, int memoryLimit) {
+    public static void sortStringsInFile(String inputFilePath, @Nullable String outFilePath, StringSorterInterface sorter) {
         try (InputStream is = new FileInputStream(inputFilePath);
              OutputStream os = outFilePath == null ? System.out : new FileOutputStream(outFilePath))
         {
-            FixedLengthStringSorter sorter = FixedLengthStringSorter.getInstance(
-                                                getLineLength(inputFilePath),
-                                                memoryLimit);
             sorter.sortStrings(is, os == null ? System.out : os);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -40,18 +35,6 @@ public class StringSorter {
             e.printStackTrace();
         }
     }
-
-    private static int getLineLength(String inputFilePath) throws IOException {
-        int result;
-        try (BufferedReader br = new BufferedReader(new FileReader(inputFilePath)))
-        {
-            String line = br.readLine();
-            result = line.getBytes().length;
-            br.close();
-        }
-        return result;
-    }
-
 
     private static void echoHelp() {
         System.out.println("Error, invalid arguments");

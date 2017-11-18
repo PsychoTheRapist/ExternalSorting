@@ -120,8 +120,7 @@ class FixedLengthStringSorter implements StringSorterInterface {
                 int firstFileLinesRead = 0;
                 int secondFileLinesRead = 0;
 
-                while(firstFileLinesRead < sortedSequenceLength &&
-                        secondFileLinesRead < sortedSequenceLength) {
+                while(firstFileLinesRead < sortedSequenceLength && secondFileLinesRead < sortedSequenceLength) {
                     if (firstFileLine != null && (secondFileLine == null ||
                                                     firstFileLine.compareTo(secondFileLine) <= 0)) {
                         outs[currentOutIndex].println(firstFileLine);

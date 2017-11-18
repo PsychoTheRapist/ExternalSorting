@@ -8,8 +8,9 @@ class FixedLengthRandomStringGenerator implements StringGeneratorInterface {
 
     private final static String defaultSymbols;
     static {
-        String letters = "abcdefghijklmnopqrstuvwxy";
-        defaultSymbols = letters + letters.toUpperCase();
+        String latinLetters = "abcdefghijklmnopqrstuvwxy";
+        String cyrillicLetters = "фбвгдеёжзийклмнопрстуфхцчшщьыъэюя";
+        defaultSymbols = latinLetters + latinLetters.toUpperCase() + cyrillicLetters + cyrillicLetters.toUpperCase();
     }
 
     private final int lineLength;

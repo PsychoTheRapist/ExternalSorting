@@ -11,18 +11,21 @@ public class Tester {
         int linesNumber = in.nextInt();
         int lineLength = in.nextInt();
 
-        String generatedFileName = "generated";
+        String generatedFileName = "generated_strings";
+        String sortedFileName = "sorted_strings";
 
         try (FileOutputStream fos = new FileOutputStream(generatedFileName))
         {
             StringGenerator.generateFile(linesNumber, lineLength, fos);
-            fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        StringSorter.sortStringsInFile(generatedFileName, null, 100);
+        int memLimit = 100;
+
+        StringSorterInterface sorter = ArbitraryLengthStringSorter.getInstance(memLimit);
+        StringSorter.sortStringsInFile(generatedFileName, sortedFileName, sorter);
     }
 }
