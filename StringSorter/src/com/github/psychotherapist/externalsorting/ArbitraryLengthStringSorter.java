@@ -5,17 +5,25 @@ import com.github.psychotherapist.externalsorting.utils.Utils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class ArbitraryLengthStringSorter implements StringSorterInterface {
     private final long memoryLimitBytes;
+    private final Comparator<String> comparator;
 
     static ArbitraryLengthStringSorter getInstance(long memoryLimitBytes) {
-        return new ArbitraryLengthStringSorter(memoryLimitBytes);
+        Comparator<String> naturalOrder = Comparator.naturalOrder();
+        return getInstance(memoryLimitBytes, naturalOrder);
     }
 
-    private ArbitraryLengthStringSorter(long memoryLimitBytes) {
+    static ArbitraryLengthStringSorter getInstance(long memoryLimitBytes, Comparator<String> comparator) {
+        return new ArbitraryLengthStringSorter(memoryLimitBytes, comparator);
+    }
+
+    private ArbitraryLengthStringSorter(long memoryLimitBytes, Comparator<String> comparator) {
         this.memoryLimitBytes = memoryLimitBytes;
+        this.comparator = comparator;
     }
 
     @Override
@@ -43,8 +51,13 @@ public class ArbitraryLengthStringSorter implements StringSorterInterface {
              PrintWriter pw = new PrintWriter(os))
         {
             String line;
+            String lineSeparator = "";
             while ((line = br.readLine()) != null) {
-                pw.println(line);
+                pw.print(lineSeparator);
+                pw.print(line);
+                if (lineSeparator.isEmpty()) {
+                    lineSeparator = System.lineSeparator();
+                }
             }
         }
 
@@ -117,8 +130,8 @@ public class ArbitraryLengthStringSorter implements StringSorterInterface {
                 String firstPrevLine = null;
                 String secondPrevLine = null;
 
-                while (Utils.isGrowingSequence(firstPrevLine, firstFileLine) &&
-                        Utils.isGrowingSequence(secondPrevLine, secondFileLine)) {
+                while (Utils.isGrowingSequence(firstPrevLine, firstFileLine, comparator) &&
+                        Utils.isGrowingSequence(secondPrevLine, secondFileLine, comparator)) {
                     if (firstFileLine.compareTo(secondFileLine) <= 0) {
                         outs[currentOutIndex].println(firstFileLine);
                         firstPrevLine = firstFileLine;
@@ -130,13 +143,13 @@ public class ArbitraryLengthStringSorter implements StringSorterInterface {
                     }
                 }
 
-                while(Utils.isGrowingSequence(firstPrevLine, firstFileLine)) {
+                while(Utils.isGrowingSequence(firstPrevLine, firstFileLine, comparator)) {
                     outs[currentOutIndex].println(firstFileLine);
                     firstPrevLine = firstFileLine;
                     firstFileLine = ins[0].readLine();
                 }
 
-                while(Utils.isGrowingSequence(secondPrevLine, secondFileLine)) {
+                while(Utils.isGrowingSequence(secondPrevLine, secondFileLine, comparator)) {
                     outs[currentOutIndex].println(secondFileLine);
                     secondPrevLine = secondFileLine;
                     secondFileLine = ins[1].readLine();
@@ -161,7 +174,7 @@ public class ArbitraryLengthStringSorter implements StringSorterInterface {
     }
 
     private void sortInMemory(InputStream is, OutputStream os) {
-        PriorityQueue<String> heap = new PriorityQueue<>();
+        PriorityQueue<String> heap = new PriorityQueue<>(comparator);
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;

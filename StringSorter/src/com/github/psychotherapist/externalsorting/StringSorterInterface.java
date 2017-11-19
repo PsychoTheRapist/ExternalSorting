@@ -7,5 +7,5 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface StringSorterInterface {
-    void sortStrings(InputStream is, @Nullable OutputStream os) throws IOException;
+    void sortStrings(InputStream is, OutputStream os) throws IOException;
 }

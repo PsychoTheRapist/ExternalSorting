@@ -3,6 +3,7 @@ package com.github.psychotherapist.externalsorting;
 import com.sun.istack.internal.Nullable;
 
 import java.io.*;
+import java.util.Comparator;
 
 public class StringSorter {
     public static void main(String[] args) {
@@ -11,24 +12,20 @@ public class StringSorter {
             return;
         }
 
-        //TODO Parse args proprly
-        //TODO Add stdin support
         String inputFile;
         inputFile = args[0];
-
-        String outputFilePath = null;
-        outputFilePath = args[1];
+        String outputFilePath = args[1];
         long memoryLimitBytes = Long.parseLong(args[2]);
 
         StringSorterInterface sorter = ArbitraryLengthStringSorter.getInstance(memoryLimitBytes);
         sortStringsInFile(inputFile, outputFilePath, sorter);
     }
 
-    public static void sortStringsInFile(String inputFilePath, @Nullable String outFilePath, StringSorterInterface sorter) {
+    public static void sortStringsInFile(String inputFilePath, String outFilePath, StringSorterInterface sorter) {
         try (InputStream is = new FileInputStream(inputFilePath);
-             OutputStream os = outFilePath == null ? System.out : new FileOutputStream(outFilePath))
+             OutputStream os = new FileOutputStream(outFilePath))
         {
-            sorter.sortStrings(is, os == null ? System.out : os);
+            sorter.sortStrings(is, os);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -38,7 +35,6 @@ public class StringSorter {
 
     private static void echoHelp() {
         System.out.println("Error, invalid arguments");
-        System.out.println("Usage: StringSorter inFilePath [ outFilePath ] ");
-        System.out.println("Default out: stdout");
+        System.out.println("Usage: StringSorter inFilePath outFilePath");
     }
 }

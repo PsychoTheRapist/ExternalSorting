@@ -1,8 +1,11 @@
 package com.github.psychotherapist.externalsorting.utils;
 
+import com.sun.istack.internal.Nullable;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Comparator;
 
 public class Utils {
     public static int getLineLength(String inputFilePath) throws IOException {
@@ -17,6 +20,11 @@ public class Utils {
     }
 
     public static boolean isGrowingSequence(String prev, String current) {
-        return current != null && (prev == null || current.compareTo(prev) >= 0);
+        Comparator<String> naturalOrder = Comparator.naturalOrder();
+        return isGrowingSequence(prev, current, naturalOrder);
+    }
+
+    public static boolean isGrowingSequence(String prev, String current, Comparator<String> comparator) {
+        return current != null && (prev == null || comparator.compare(current, prev) >= 0);
     }
 }
